@@ -38,6 +38,7 @@ def model_predict(img_path):
    
     img = open_image(img_path)
     pred_class,pred_idx,outputs = learn.predict(img)
+    pred_class = str(pred_class)
     return pred_class
     
 
