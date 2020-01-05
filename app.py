@@ -7,10 +7,10 @@ import re
 from pathlib import Path
 
 
-
 # Import fast.ai Library
 from fastai import *
 from fastai.vision import *
+
 
 # Flask utils
 from flask import Flask, redirect, url_for, request, render_template
@@ -21,13 +21,11 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 
-
 path = Path("path")
 classes = ['gate', 'lib','tp','ub']
-data2 = ImageDataBunch.single_from_classes(path, classes, tfms=get_transforms(), size=224).normalize(imagenet_stats)
-learn = create_cnn(data2, models.resnet34)
+data2 = ImageDataBunch.single_from_classes(path, classes, ds_tfms=get_transforms(), size=224).normalize(imagenet_stats)
+learn = cnn_learner(data2, models.resnet34)
 learn.load('stage-1')
-
 
 
 
@@ -35,13 +33,10 @@ def model_predict(img_path):
     """
        model_predict will return the preprocessed image
     """
-   
     img = open_image(img_path)
     pred_class,pred_idx,outputs = learn.predict(img)
     pred_class = str(pred_class)
     return pred_class
-    
-
 
 
 
@@ -49,6 +44,7 @@ def model_predict(img_path):
 def index():
     # Main page
     return render_template('index.html')
+
 
 
 @app.route('/predict', methods=['GET', 'POST'])
@@ -69,8 +65,6 @@ def upload():
     return None
 
 
+
 if __name__ == '__main__':
-    
-    app.run()
-
-
+    app.run(host='0.0.0.0', port=5000, debug=True)
